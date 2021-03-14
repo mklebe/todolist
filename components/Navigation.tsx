@@ -6,6 +6,7 @@ function Navigation() {
     <HStack spacing="16px" marginBottom="24px">
       <Link href="/">Home</Link>
       <Link href="/books">Books</Link>
+      <Link href="/todos">Todos</Link>
     </HStack>
   )
 }

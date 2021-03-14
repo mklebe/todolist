@@ -9,7 +9,7 @@ return (
   <>
     {store.todos.map(( todo ) => (
       <Flex pt={2} key={todo.id}>
-        <Checkbox checked={!!todo.done} onChange={() => toggle(todo.id)}/>
+        <Checkbox isChecked={!!todo.done} onChange={() => toggle(todo.id)}/>
         <Input value={todo.text}
           mx={ 2 }
           onChange={(evt) => update({

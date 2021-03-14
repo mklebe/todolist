@@ -1,4 +1,32 @@
-import { createEvent, createStore, createEffect } from 'effector';
+import { createDomain, Domain} from 'effector';
+
+const todoList = createDomain('todoList');
+
+function saveToStorage(domain: Domain, storage) {
+  return domain.onCreateStore(store => {
+    const key = `${domain.shortName}/${store.shortName}`
+    store.watch(value => {
+      storage.setItem(
+        key,
+        JSON.stringify(value),
+      )
+    })
+  })
+}
+
+function loadFromStorage(domain: Domain, storage) {
+  return domain.onCreateStore(store => {
+    const key = `${domain.shortName}/${store.shortName}`
+    const raw = storage.getItem(key)
+    console.log(raw);
+    if (!raw) return
+    const parsed = JSON.parse(raw)
+    store.setState(parsed)
+  })
+}
+
+loadFromStorage(todoList, localStorage);
+saveToStorage(todoList, localStorage);
 
 export interface Todo {
   id: number;
@@ -29,26 +57,28 @@ const addTodoToList = (todos: Todo[], text: string): Todo[] => [
   }
 ];
 
-export const getTodos = createEffect(async (url: string) => {
+export const getTodos = todoList.createEffect(async (url: string) => {
   const req = await fetch(url);
   const todos = await req.json() as Todo[];
   return todos
 });
 
-export const setNewTodo = createEvent<string>();
-export const addTodo = createEvent();
-export const toggle = createEvent<number>();
-export const remove = createEvent<number>();
-export const update = createEvent<{ id: number, text: string }>();
+export const setNewTodo = todoList.createEvent<string>();
+export const addTodo = todoList.createEvent();
+export const toggle = todoList.createEvent<number>();
+export const remove = todoList.createEvent<number>();
+export const update = todoList.createEvent<{ id: number, text: string }>();
 
 type Store = {
   todos: Todo[];
   newTodo: string;
 }
 
-const todoStore = createStore<Store>({
+const todoStore = todoList.createStore<Store>({
   todos: [],
   newTodo: '',
+}, {
+  name: 'status',
 })
 
 export default todoStore
