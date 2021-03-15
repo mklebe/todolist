@@ -1,23 +1,23 @@
 import dynamic from "next/dynamic";
 
-import { Box } from "@chakra-ui/layout"
+import { Container } from "@chakra-ui/react"
 const AddTodo = dynamic( () => import("../../components/AddTodo"), {ssr: false});
 const ListTodos = dynamic( () => import("../../components/ListTodos"), {ssr: false});
 const DoneTodos = dynamic(() => import("../../components/DoneTodos"), {ssr: false});
 
-import { Alert, ChakraProvider } from "@chakra-ui/react";
-import Navigation from "../../components/Navigation";
-
-export default function Home() {
+export default function Todos() {
   return (
-    <ChakraProvider>
-      <Box maxWidth="8xl" margin="auto" p={5}>
-        <Navigation />
+    <>
+      <Container maxWidth="100%" mb="32px">
         <AddTodo />
+      </Container>
+      <Container maxWidth="100%" mb="32px">
         <ListTodos />
+      </Container>
+      <Container maxWidth="100%" mb="32px">
         <DoneTodos />
-      </Box>
-    </ChakraProvider>
+      </Container>
+    </>
   )
 }
 
