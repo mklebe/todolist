@@ -1,21 +1,21 @@
 import dynamic from "next/dynamic";
 
 import { Container } from "@chakra-ui/react"
-const AddTodo = dynamic( () => import("../../components/AddTodo"), {ssr: false});
-const ListTodos = dynamic( () => import("../../components/ListTodos"), {ssr: false});
-const DoneTodos = dynamic(() => import("../../components/DoneTodos"), {ssr: false});
+const TodoAdd = dynamic(() => import("../../components/TodoAdd"), { ssr: false });
+const TodosList = dynamic(() => import("../../components/TodoList"), { ssr: false });
+const TodosDone = dynamic(() => import("../../components/TodosDone"), { ssr: false });
 
 export default function Todos() {
   return (
     <>
       <Container maxWidth="100%" mb="32px">
-        <AddTodo />
+        <TodoAdd />
       </Container>
       <Container maxWidth="100%" mb="32px">
-        <ListTodos />
+        <TodosList />
       </Container>
       <Container maxWidth="100%" mb="32px">
-        <DoneTodos />
+        <TodosDone />
       </Container>
     </>
   )

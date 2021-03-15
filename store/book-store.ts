@@ -1,30 +1,17 @@
-import { createDomain, Domain } from "effector"
+import { createDomain } from 'effector';
+import { loadFromStorage, saveToStorage } from './utils';
 
 const bookShelf = createDomain('bookshelf');
 
-function saveToStorage(domain: Domain, storage) {
-  return domain.onCreateStore(store => {
-    const key = `${domain.shortName}/${store.shortName}`
-    store.watch(value => {
-      storage.setItem(
-        key,
-        JSON.stringify(value),
-      )
-    })
-  })
-}
+loadFromStorage(bookShelf, localStorage);
+saveToStorage(bookShelf, localStorage);
 
-function loadFromStorage(domain: Domain, storage) {
-  return domain.onCreateStore(store => {
-    const key = `${domain.shortName}/${store.shortName}`
-    const raw = storage.getItem(key)
-    console.log(raw);
-    if (!raw) return
-    const parsed = JSON.parse(raw)
-    store.setState(parsed)
-  })
+export interface Book {
+  id: number;
+  title: string;
+  isStarted: boolean;
+  isFinished: boolean;
 }
-
 
 export const addBook = bookShelf.createEvent<string>();
 export const updateBook = bookShelf.createEvent<{id: number, title: string}>()
@@ -41,16 +28,8 @@ const library = bookShelf.createStore<BookStore>({
   name: 'status'
 });
 
-loadFromStorage(bookShelf, localStorage);
-saveToStorage(bookShelf, localStorage);
 
 
-export interface Book {
-  id: number;
-  title: string;
-  isStarted: boolean;
-  isFinished: boolean;
-}
 
 const addToLibrary = (books: Book[], title: string): Book[] => [
   ...books,

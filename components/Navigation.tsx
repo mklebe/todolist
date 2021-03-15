@@ -7,6 +7,7 @@ function Navigation() {
       <Link href="/">Home</Link>
       <Link href="/books">Books</Link>
       <Link href="/todos">Todos</Link>
+      <Link href="/features">Features</Link>
     </HStack>
   )
 }

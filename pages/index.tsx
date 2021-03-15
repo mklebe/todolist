@@ -4,12 +4,9 @@ import Navigation from "../components/Navigation";
 
 export default function Home() {
   return (
-    <ChakraProvider>
-      <Box maxWidth="8xl" margin="auto" p={5}>
-        <Navigation />
-        <Heading>Hello World</Heading>
-      </Box>
-    </ChakraProvider>
+    <>
+      <Heading>Hello World</Heading>
+    </>
   )
 }
 

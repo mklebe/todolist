@@ -1,29 +1,7 @@
-import { createDomain, Domain} from 'effector';
+import { createDomain } from 'effector';
+import { loadFromStorage, saveToStorage } from './utils';
 
 const todoList = createDomain('todoList');
-
-function saveToStorage(domain: Domain, storage) {
-  return domain.onCreateStore(store => {
-    const key = `${domain.shortName}/${store.shortName}`
-    store.watch(value => {
-      storage.setItem(
-        key,
-        JSON.stringify(value),
-      )
-    })
-  })
-}
-
-function loadFromStorage(domain: Domain, storage) {
-  return domain.onCreateStore(store => {
-    const key = `${domain.shortName}/${store.shortName}`
-    const raw = storage.getItem(key)
-    console.log(raw);
-    if (!raw) return
-    const parsed = JSON.parse(raw)
-    store.setState(parsed)
-  })
-}
 
 loadFromStorage(todoList, localStorage);
 saveToStorage(todoList, localStorage);
@@ -33,6 +11,19 @@ export interface Todo {
   text: string;
   done: boolean;
 }
+
+export const setNewTodo = todoList.createEvent<string>();
+export const addTodo = todoList.createEvent();
+export const toggle = todoList.createEvent<number>();
+export const remove = todoList.createEvent<number>();
+export const update = todoList.createEvent<{ id: number, text: string }>();
+
+const todoStore = todoList.createStore<Store>({
+  todos: [],
+  newTodo: '',
+}, {
+  name: 'status',
+})
 
 const removeTodo = (todos: Todo[], id: number): Todo[] => todos.filter((todo) => todo.id !== id);
 
@@ -63,23 +54,12 @@ export const getTodos = todoList.createEffect(async (url: string) => {
   return todos
 });
 
-export const setNewTodo = todoList.createEvent<string>();
-export const addTodo = todoList.createEvent();
-export const toggle = todoList.createEvent<number>();
-export const remove = todoList.createEvent<number>();
-export const update = todoList.createEvent<{ id: number, text: string }>();
 
 type Store = {
   todos: Todo[];
   newTodo: string;
 }
 
-const todoStore = todoList.createStore<Store>({
-  todos: [],
-  newTodo: '',
-}, {
-  name: 'status',
-})
 
 export default todoStore
   .on(getTodos.doneData, (state, todos) => ({
