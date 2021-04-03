@@ -21,6 +21,7 @@ export const setInitialFeatureEffort = productFeatureList.createEvent<number>();
 export const addProductFeature = productFeatureList.createEvent();
 export const deleteProductFeature = productFeatureList.createEvent<number>();
 export const achieveProductFeature = productFeatureList.createEvent<number>();
+export const completeProductFeature = productFeatureList.createEvent<number>();
 
 const add = (features: ProductFeature[], {title, impact, effort}: InitialProductFeature): ProductFeature[] => [
   ...features,
@@ -32,6 +33,15 @@ const add = (features: ProductFeature[], {title, impact, effort}: InitialProduct
     effort,
   }
 ];
+
+const toggle = (features: ProductFeature[], id: number): ProductFeature[] =>
+  features.map((feature) => {
+    console.log(feature)
+    return {
+      ...feature,
+      done: feature.id === id ? !feature.done : feature.done,
+    };
+  });
 
 const remove = (features: ProductFeature[], id: number): ProductFeature[] => features.filter((f) => f.id !== id);
 
@@ -95,5 +105,9 @@ export default productFeatureMap
   .on(achieveProductFeature, (state, id) => ({
     ...state,
     features: achive(state.features, id),
+  }))
+  .on(completeProductFeature, (state, id) => ({
+    ...state,
+    features: toggle(state.features, id),
   }))
 ;
