@@ -1,8 +1,8 @@
 import dynamic from 'next/dynamic';
 
 import { Container, Heading } from "@chakra-ui/react"
-const FeatureAdd = dynamic(() => import('../../components/FeatureAdd'), { ssr: true });
-const FeatureList = dynamic(() => import('../../components/FeatureList'), { ssr: true });
+const FeatureAdd = dynamic(() => import('../../components/FeatureAdd'), { ssr: false });
+const FeatureList = dynamic(() => import('../../components/FeatureList'), { ssr: false });
 
 export default function Features() {
   return (
