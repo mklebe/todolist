@@ -1,10 +1,48 @@
 import { createDomain } from 'effector';
-import { loadFromStorage, saveToStorage } from './utils';
+import { loadFromStorage, saveToStorage, saveWithFunction } from './utils';
+import firebase from 'firebase/app';
+import 'firebase/database';
 
 const productFeatureList = createDomain('productFeatureList');
 
 loadFromStorage(productFeatureList, localStorage);
 saveToStorage(productFeatureList, localStorage);
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB10HEW3qg5l3khyHzXtbgUKEkeJSeA11M",
+  authDomain: "todolist-d887f.firebaseapp.com",
+  databaseURL: "https://todolist-d887f-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "todolist-d887f",
+  storageBucket: "todolist-d887f.appspot.com",
+  messagingSenderId: "287249167474",
+  appId: "1:287249167474:web:c501dbfa9a516d9df3feeb",
+};
+
+if(firebase.apps.length === 0) {
+  firebase.initializeApp(firebaseConfig);
+}
+// Get default database from firebase; currently there is only one database
+const db = firebase.app().database();
+
+// // Create a pointer to the database in the cloud, to put data in the database
+const databaseReference = db.ref("features");
+
+productFeatureList.onCreateStore(store => {
+  databaseReference.get().then(snapshot => {
+    console.log(snapshot.toJSON());
+  })
+
+  // databaseReference.on('value', snapshot => {
+  //   const snapValue = snapshot.val();
+  //   console.log(snapValue)
+  //   store.setState( snapValue )
+  // });
+});
+
+// saveWithFunction(productFeatureList, (value) => {
+//   databaseReference.set(value);
+// });
+
 
 export interface ProductFeature {
   id: number;
@@ -34,14 +72,14 @@ const add = (features: ProductFeature[], {title, impact, effort}: InitialProduct
   }
 ];
 
-const toggle = (features: ProductFeature[], id: number): ProductFeature[] =>
+const complete = (features: ProductFeature[], id: number): ProductFeature[] =>
   features.map((feature) => {
-    console.log(feature)
     return {
       ...feature,
-      done: feature.id === id ? !feature.done : feature.done,
+      done: feature.id === id ? true : feature.done,
     };
-  });
+  }
+);
 
 const remove = (features: ProductFeature[], id: number): ProductFeature[] => features.filter((f) => f.id !== id);
 
@@ -108,6 +146,6 @@ export default productFeatureMap
   }))
   .on(completeProductFeature, (state, id) => ({
     ...state,
-    features: toggle(state.features, id),
+    features: complete(state.features, id),
   }))
 ;

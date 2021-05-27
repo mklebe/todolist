@@ -17,7 +17,7 @@ export default function Features() {
   )
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   return {
     props: {},
   }
