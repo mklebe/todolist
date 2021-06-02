@@ -45,8 +45,8 @@ function CompletedFeatureList({completed}: {completed: Array<ProductFeature>}) {
 
 function TodoList() {
   const store = useStore($store);
-  const openFeatures = store.features.filter((feature) => !feature.done);
-  const completedFeatures = store.features.filter((feature) => feature.done);
+  const openFeatures = store.featureList.filter((feature) => !feature.done);
+  const completedFeatures = store.featureList.filter((feature) => feature.done);
 
   const impactDone = completedFeatures.reduce((acc, current) => acc + current.impact, 0);
 

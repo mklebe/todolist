@@ -1,12 +1,8 @@
 import { createDomain } from 'effector';
-import { loadFromStorage, saveToStorage, saveWithFunction } from './utils';
 import firebase from 'firebase/app';
 import 'firebase/database';
 
 const productFeatureList = createDomain('productFeatureList');
-
-loadFromStorage(productFeatureList, localStorage);
-saveToStorage(productFeatureList, localStorage);
 
 const firebaseConfig = {
   apiKey: "AIzaSyB10HEW3qg5l3khyHzXtbgUKEkeJSeA11M",
@@ -27,22 +23,15 @@ const db = firebase.app().database();
 // // Create a pointer to the database in the cloud, to put data in the database
 const databaseReference = db.ref("features");
 
-productFeatureList.onCreateStore(store => {
-  databaseReference.get().then(snapshot => {
-    console.log(snapshot.toJSON());
-  })
+productFeatureList.onCreateStore(async (store) => {
+  const snapshot = databaseReference.get();
+  const initialState = (await snapshot).val();
+  store.setState(initialState);
 
-  // databaseReference.on('value', snapshot => {
-  //   const snapValue = snapshot.val();
-  //   console.log(snapValue)
-  //   store.setState( snapValue )
-  // });
+  store.watch(value => {
+    databaseReference.set(value);
+  });
 });
-
-// saveWithFunction(productFeatureList, (value) => {
-//   databaseReference.set(value);
-// });
-
 
 export interface ProductFeature {
   id: number;
@@ -51,6 +40,26 @@ export interface ProductFeature {
   impact: number;
   effort: number;
 }
+
+type InitialProductFeature = Pick<ProductFeature, 'title' | 'effort' | 'impact'>;
+
+type Store = {
+  featureList: ProductFeature[];
+  initalFeature: InitialProductFeature,
+}
+
+databaseReference.on('value', snap => {
+  console.log(snap.val());
+})
+
+const productFeatureMap = productFeatureList.createStore<Store>({
+  featureList: [],
+  initalFeature: {
+    title: '',
+    impact: 1,
+    effort: 1,
+  }
+});
 
 export const setInitialFeatureTitle = productFeatureList.createEvent<string>();
 export const setInitialFeatureImpact = productFeatureList.createEvent<number>();
@@ -89,22 +98,6 @@ const achive = (features: ProductFeature[], id: number): ProductFeature[] =>
     done: f.id === id ? true : f.done,
   }));
 
-type InitialProductFeature = Pick<ProductFeature, 'title' | 'effort' | 'impact'>;
-
-type Store = {
-  features: ProductFeature[];
-  initalFeature: InitialProductFeature,
-}
-
-const productFeatureMap = productFeatureList.createStore<Store>({
-  features: [],
-  initalFeature: {
-    title: '',
-    impact: 1,
-    effort: 1,
-  }
-});
-
 export default productFeatureMap
   .on(setInitialFeatureTitle, (state, title) => ({
     ...state,
@@ -129,7 +122,7 @@ export default productFeatureMap
   }))
   .on(addProductFeature, (state) => ({
     ...state,
-    features: add(state.features, state.initalFeature),
+    featureList: add(state.featureList, state.initalFeature),
     initalFeature: {
       title: '',
       impact: 1,
@@ -138,14 +131,14 @@ export default productFeatureMap
   }))
   .on(deleteProductFeature, (state, id) => ({
     ...state,
-    features: remove(state.features, id),
+    featureList: remove(state.featureList, id),
   }))
   .on(achieveProductFeature, (state, id) => ({
     ...state,
-    features: achive(state.features, id),
+    featureList: achive(state.featureList, id),
   }))
   .on(completeProductFeature, (state, id) => ({
     ...state,
-    features: complete(state.features, id),
+    featureList: complete(state.featureList, id),
   }))
 ;
