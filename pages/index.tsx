@@ -1,6 +1,4 @@
-import { Box, Heading, Container } from "@chakra-ui/react"
-import { ChakraProvider } from "@chakra-ui/react";
-import Navigation from "../components/Navigation";
+import { Heading } from "@chakra-ui/react"
 
 export default function Home() {
   return (

@@ -1,10 +1,6 @@
 import { createDomain } from 'effector';
-import { loadFromStorage, saveToStorage } from './utils';
 
 const todoList = createDomain('todoList');
-
-loadFromStorage(todoList, localStorage);
-saveToStorage(todoList, localStorage);
 
 export interface Todo {
   id: number;
@@ -25,7 +21,9 @@ const todoStore = todoList.createStore<Store>({
   name: 'status',
 })
 
-const removeTodo = (todos: Todo[], id: number): Todo[] => todos.filter((todo) => todo.id !== id);
+const removeTodo = (todos: Todo[], id: number): Todo[] => todos.filter((todo) => {
+  return todo.id !== id
+});
 
 const toggleTodo = (todos: Todo[], id: number): Todo[] =>
   todos.map((todo) => ({
